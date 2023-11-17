@@ -1,0 +1,75 @@
+plugins {
+    id 'java'
+    id 'ru.vyarus.quality' version '4.8.0'
+    id "io.qameta.allure" version "2.5"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group = 'app-inspector'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+configurations {
+    agent
+    testCompile
+}
+
+test.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}
+
+dependencies {
+    agent 'org.aspectj:aspectjweaver:1.9.19'
+    implementation group: 'org.testng', name: 'testng', version: '6.9.5'
+    implementation group: 'io.appium', name: 'java-client', version: '7.0.0'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.7'
+    implementation group: 'com.relevantcodes', name: 'extentreports', version: '2.41.2'
+    implementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
+    implementation group: 'io.qameta.allure', name: 'allure-testng', version: '2.21.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+    implementation group: 'org.json', name: 'json', version: '20210307'
+    //implementation group: 'io.github.ashwithpoojary98', name: 'appium_flutterfinder_java', version: '1.0.0'
+}
+
+test {
+    useTestNG {
+        //scanForTestClasses = false
+        suites 'testng.xml'
+        ignoreFailures = true
+    }
+    testLogging {
+        events "PASSED", "STARTED", "FAILED", "SKIPPED"
+    }
+    systemProperty 'env', System.getProperty('env', 'all')
+}
+
+allure {
+    version = '2.5.0'
+    autoconfigure = true
+    aspectjweaver = true
+    resultsDir = file('allure-results')
+    useTestNG {
+        version = '2.0-BETA15'
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}

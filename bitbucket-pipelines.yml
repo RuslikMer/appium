@@ -1,0 +1,67 @@
+definitions:
+  steps:
+    - aws: &aws
+        access-key: $AWS_ACCESS_KEY
+        secret-key: $AWS_SECRET_KEY
+
+  caches:
+    app: .gradle/cache
+
+pipelines:
+  custom:
+    app-test:
+      - variables:
+          - name: APP_LINK
+      - step:
+          name: dependencies
+          runs-on:
+            - 4g.runner
+          image:
+            name: 563015111653.dkr.ecr.eu-central-1.amazonaws.com/bambinifashion:jdk8
+            aws: *aws
+          caches:
+            - app
+          script:
+            - gradle dependencies
+          #services:
+           # - gradle
+
+      - step:
+          name: test
+          runs-on:
+            - 4g.runner
+          image:
+            name: 563015111653.dkr.ecr.eu-central-1.amazonaws.com/bambinifashion:jdk8
+            aws: *aws
+          caches:
+            - app
+          script:
+            - cd src/test
+            - sed -i "s~__bs_app__template~$APP_LINK~" ./java/com/setup/DeviceSetup.java
+            - sed -i "s~__build_number__template~build $BITBUCKET_BUILD_NUMBER~" ./java/com/setup/DeviceSetup.java
+            - cd ../..
+            - gradle test
+          artifacts:
+            - build/reports/allure-results
+          #services:
+          #  - gradle
+
+      - step:
+          name: get public results link
+          runs-on:
+            - 8g.runner
+          size: 2x
+          script:
+            - pipe: atlassian/trigger-pipeline:5.0.0
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                ACCOUNT: "bambinifashion"
+                REPOSITORY: "inspector"
+                BRANCH_NAME: "master"
+                CUSTOM_PIPELINE_NAME: "browserstack-public-link"
+                PIPELINE_VARIABLES: >
+                  [{
+                    "key": "URL",
+                    "value": "https://app-automate.browserstack.com/dashboard"
+                  }]

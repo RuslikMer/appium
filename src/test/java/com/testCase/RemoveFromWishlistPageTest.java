@@ -1,0 +1,30 @@
+package com.testCase;
+
+import com.page.Menu;
+import com.setup.BaseTest;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+import org.testng.annotations.Test;
+
+
+@Epic("Regression Tests")
+@Feature("")
+
+
+public class RemoveFromWishlistPageTest extends BaseTest {
+
+
+    @Test
+    //@Severity(SeverityLevel.BLOCKER)
+    @Description("add and remove from wishlist page")
+    @Story("")
+    public void removeFromWishlistPageTest() {
+        home.openHomePage();
+        menu.goToMenuCategory(Menu.NEW_IN);
+        listing.addToWishlist("guest");
+        home.goToWishlist();
+        wishlist.remove();
+    }
+}
