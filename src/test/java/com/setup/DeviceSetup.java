@@ -40,8 +40,8 @@ public class DeviceSetup extends BaseTest {
         browserstackOptions.put("osVersion", "16");
         browserstackOptions.put("realMobile", "true");
         browserstackOptions.put("local", "false");
-        browserstackOptions.put("userName", "ruslanmerikanov_hgdoNE");
-        browserstackOptions.put("accessKey", "rapizxxxCccqv5havz6k");
+        browserstackOptions.put("userName", "");
+        browserstackOptions.put("accessKey", "");
         capabilities.setCapability("bstack:options", browserstackOptions);
         capabilities.setCapability("app", __bs_app__);
         capabilities.setCapability("deviceName","iPhone 14");
